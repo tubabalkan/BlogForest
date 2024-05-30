@@ -38,5 +38,14 @@ namespace BlogForest.DataAccessLayer.EntityFramework
             var values = context.Blogs.Where(x => x.AppUserId == appUserID).OrderByDescending(y => y.BlogId).Take(2).ToList();
             return values;
         }
+
+        public void IncreasBlogViewCount(int id)
+        {
+            var context = new BlogContext();
+            var value=context.Blogs.Where(x=>x.BlogId == id).FirstOrDefault();
+            value.ViewCount += 1;
+            context.Blogs.Update(value);
+            context.SaveChanges();
+        }
     }
 }

@@ -2,6 +2,7 @@
 using BlogForest.WebUI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace BlogForest.WebUI.Controllers
 {
@@ -66,6 +67,53 @@ namespace BlogForest.WebUI.Controllers
             await _roleManager.UpdateAsync(value);
             return RedirectToAction("RoleList");
         }
-    
+
+        public IActionResult UserList()
+        {
+            var values= _userManager.Users.ToList();
+            return View(values);
+        }
+        [HttpGet]
+        public async Task<IActionResult> AssingRole(int id)
+        {
+            var user=_userManager.Users.FirstOrDefault(x=>x.Id == id);
+            TempData["x"] = user.Id;
+            var roles=_roleManager.Roles.ToList();
+            var userRoles=await _userManager.GetRolesAsync(user);
+
+            List<RoleAssingViewModel> roleAssingViewModels=new List<RoleAssingViewModel>();
+            foreach (var item in roles)
+            {
+                RoleAssingViewModel model = new RoleAssingViewModel();
+                model.RoleId = item.Id;
+                model.RoleName = item.Name;
+                model.RoleExist = userRoles.Contains(item.Name);
+                roleAssingViewModels.Add(model);
+
+            }
+            return View(roleAssingViewModels);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AssingRole(List<RoleAssingViewModel> model)
+        {
+            var userId =(int)TempData["x"];
+            var user = _userManager.Users.FirstOrDefault(x => x.Id == userId);
+            foreach (var item in model)
+            {
+                if (item.RoleExist)
+                {
+                    //await _userManager.AddToRolesAsync(user, item.RoleName);
+                }
+                else
+                {
+                    await _userManager.RemoveFromRoleAsync(user, item.RoleName);
+
+                }
+                
+            }
+            return RedirectToAction("UserList");
+        }
+
+
     }
 }

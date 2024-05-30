@@ -12,5 +12,6 @@ namespace BlogForest.BusinessLayer.Abstract
         public List<Blog> TGetBlogsWithCategoryAndUser();
         public List<Blog> TGetLast2BlogByAppUser(int id);
         public List<Blog> TGetBlogsByAppUser(int id);
+        public void TIncreasBlogViewCount(int id);
     }
 }
